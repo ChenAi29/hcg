@@ -3,10 +3,14 @@
  * @Date: 2021-05-20 16:57:26 
  * @Description: 
  */
-export class RoleData {
+export class PetData {
 
     public id: number;
 
+    public name: string;
+
     public level: number;
+
+    public exp: number;
 
 }

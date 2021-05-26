@@ -5,5 +5,9 @@
  */
 export enum UIPath {
 
-    PET_DIALOG = ""
+    PET_DIALOG = "prefab/ui/PetDialog",
+
+    GAME_BOARD = "prefab/ui/GameBoard",
+
+    PET_MIX_DIALOG = "prefab/ui/PetMixDialog",
 }

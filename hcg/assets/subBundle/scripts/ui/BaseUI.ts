@@ -6,6 +6,7 @@
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export class BaseUI extends cc.Component {
+export abstract class BaseUI extends cc.Component {
 
+    public onShow(): void { }
 }

@@ -20,8 +20,12 @@ export class ResManager {
         targetMap: Map<string, T>
     ) {
         let assetMap = await AssetBundleManager.loadBundleDir(bundleName, url, assType);
-        assetMap.forEach((path, asset) => {
+        assetMap.forEach((asset, path) => {
             targetMap.set(path, asset);
         });
+    }
+
+    public getPrefab(path: string): cc.Prefab {
+        return this.preMap.get(path);
     }
 }

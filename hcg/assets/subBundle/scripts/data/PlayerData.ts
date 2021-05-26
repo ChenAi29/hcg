@@ -1,4 +1,4 @@
-import { RoleData } from "./RoleData";
+import { PetData } from "./PetData";
 
 /*
  * @Author: Xiong ZhiCheng 
@@ -7,6 +7,6 @@ import { RoleData } from "./RoleData";
  */
 export class PlayerData {
 
-    public roleDataList: RoleData[] = [];
+    public petDataList: PetData[] = [];
 
 }
