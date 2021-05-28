@@ -249,7 +249,7 @@
       "array": [
         0,
         0,
-        359.4005425705421,
+        365.46272039703314,
         0,
         0,
         0,
@@ -334,7 +334,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 500,
-      "height": 500
+      "height": 250
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -346,7 +346,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        253.138,
+        135.98,
         0,
         0,
         0,
@@ -404,7 +404,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "SCroll",
+    "_name": "Scroll",
     "_objFlags": 0,
     "_parent": {
       "__id__": 4
@@ -438,7 +438,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 500,
-      "height": 500
+      "height": 250
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -450,7 +450,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        253.138,
+        135.98,
         0,
         0,
         0,
@@ -585,7 +585,7 @@
     "node": {
       "__id__": 9
     },
-    "_enabled": true,
+    "_enabled": false,
     "_materials": [
       {
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
