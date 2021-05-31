@@ -73,11 +73,13 @@ export class NewScrollView extends cc.Component {
 
     public init(dataList: any[]): void {
         this.dataList = dataList;
-        this.calculateLine()
+        this.calculateLine();
 
         this.content.height = Math.ceil(this.dataList.length / this.fixedPosList.length) * this.itemHight;
         //创建用于显示的item
         let spawnCount = (Math.ceil(this.displayHeight / this.itemHight) + 1) * this.fixedPosList.length;
+        //防止超出
+        spawnCount = Math.min(this.dataList.length, spawnCount);
         for (let i = 0; i < spawnCount; i++) {
             let item = this.createItem(dataList[i], i);
             this.itemList.push(item);
