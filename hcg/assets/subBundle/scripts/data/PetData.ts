@@ -13,4 +13,7 @@ export class PetData {
 
     public exp: number;
 
+    /** 是否出战 */
+    public isInUse: number;
+
 }

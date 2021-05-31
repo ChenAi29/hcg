@@ -10,4 +10,6 @@ export enum UIPath {
     GAME_BOARD = "prefab/ui/GameBoard",
 
     PET_MIX_DIALOG = "prefab/ui/PetMixDialog",
+
+    BATTLE_DIALOG = "prefab/ui/BattleDialog",
 }
