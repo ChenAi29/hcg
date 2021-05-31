@@ -23,6 +23,9 @@ export class NewScrollView extends cc.Component {
     @property({ displayName: "预制", type: cc.Prefab })
     private itemPre: cc.Prefab = null;
 
+    /** 边距 */
+    private sideInterval: number = 20;
+
     private displayHeight: number = 0;
 
     private itemHight: number = 0;
@@ -35,131 +38,92 @@ export class NewScrollView extends cc.Component {
 
     private dataList: any[] = [];
 
+    private fixedPosList: number[] = [];
+
     public onEnable(): void {
         this.scrollViewComp.node.on("scrolling", this.scroll, this);
 
         this.displayHeight = this.displayArea.height;
 
-        let dataList: number[] = [];
-        for (let i = 0; i < 10; i++) {
-            dataList.push(i);
-        }
-        this.init(dataList);
+        // let dataList: number[] = [];
+        // for (let i = 0; i < 100; i++) {
+        //     dataList.push(i);
+        // }
+        // this.init(dataList);
     }
 
     public onDisable(): void {
         this.scrollViewComp.node.targetOff(this);
     }
 
+    /** 计算行数 */
+    private calculateLine(): void {
+        let itemNode = NodePool.getInstance(this.itemPre);
+        this.itemHight = itemNode.height;
+        let width = this.displayArea.width;
+        let numPerLine = Math.floor(width / itemNode.width);
+        for (let i = 0; i < numPerLine; i++) {
+            let offset = Math.floor((width - numPerLine * itemNode.width) / (numPerLine));
+            let fixedValue = (itemNode.width + offset) * i + offset / 2;
+            this.fixedPosList.push(fixedValue);
+        }
+
+        NodePool.returnInstance(itemNode);
+    }
+
     public init(dataList: any[]): void {
         this.dataList = dataList;
-        let firstItem = this.createItem(dataList[0], 0);
-        this.itemHight = firstItem.node.height;
-        this.itemList.push(firstItem);
+        this.calculateLine()
 
-        this.content.height = this.dataList.length * this.itemHight;
-        console.error("高度为", this.content.height);
-
-
+        this.content.height = Math.ceil(this.dataList.length / this.fixedPosList.length) * this.itemHight;
         //创建用于显示的item
-        let spawnCount = Math.ceil(this.displayHeight / this.itemHight) + 1;
-        for (let i = 1; i < spawnCount + 1; i++) {
+        let spawnCount = (Math.ceil(this.displayHeight / this.itemHight) + 1) * this.fixedPosList.length;
+        for (let i = 0; i < spawnCount; i++) {
             let item = this.createItem(dataList[i], i);
             this.itemList.push(item);
         }
 
         this.firstIndex = 0;
-        this.lastIndex = spawnCount;
+        this.lastIndex = spawnCount - 1;
     }
 
-    private lastY: number = 0;
-
     private scroll(): void {
-        //+向上
-        let curY = this.content.y;
-        let displayItemIndex = Math.ceil(curY / this.itemHight);
-        let changeCount = displayItemIndex - this.firstIndex;
-        if (Math.abs(changeCount) <= 1) {
+        let value = this.content.y;
+        let perLineCount = this.fixedPosList.length;
+        let firstDisplayIndex = Math.floor(value / this.itemHight) * perLineCount;
+        let topChangeCount = firstDisplayIndex - this.firstIndex;
+        //向上移动
+        if (topChangeCount > 0) {
+            //防止超出上限
+            topChangeCount = Math.min(this.dataList.length - this.lastIndex - 1, topChangeCount);
+            let topItemList = this.itemList.splice(0, topChangeCount);
+            topItemList.forEach(topItem => {
+                this.firstIndex++;
+                this.lastIndex++;
+                let data = this.dataList[this.lastIndex];
+                topItem.init(data);
+                topItem.node.setPosition(this.getItemPos(this.lastIndex));
+                this.itemList.push(topItem);
+            });
             return;
         }
 
-        if (changeCount > 0) {
-            let topItemList = this.itemList.splice(0, changeCount - 1);
-            topItemList.forEach(topItem => {
-                let data = this.dataList[this.lastIndex + 1];
-                if (!data) {
-                    return;
-                }
-                this.lastIndex++;
-                this.firstIndex++;
-                topItem.init(data);
-                let lastItem = this.itemList[this.itemList.length - 1];
-                let y = lastItem.node.y - lastItem.node.height;
-                topItem.node.y = y;
-                this.lastY += this.itemHight;
-                this.itemList.push(topItem);
-            });
-        } else if (changeCount < 0) {
-            let bottomItemList = this.itemList.splice(this.itemList.length - changeCount, changeCount);
+        let bottomDisplayIndex = Math.floor(this.displayHeight / this.itemHight) * perLineCount + firstDisplayIndex + perLineCount - 1;
+        let bottomChangeCount = bottomDisplayIndex - this.lastIndex;
+        //向下移动
+        if (bottomChangeCount < -perLineCount) {
+            bottomChangeCount = Math.abs(bottomChangeCount) - perLineCount;
+            //防止低于下限
+            let finalBottomCount = Math.min(this.firstIndex, bottomChangeCount);
+            let bottomItemList = this.itemList.splice(this.itemList.length - finalBottomCount, finalBottomCount);
             bottomItemList.forEach(bottomItem => {
-                let data = this.dataList[this.firstIndex - 1];
-                if (!data) {
-                    return;
-                }
                 this.firstIndex--;
                 this.lastIndex--;
+                let data = this.dataList[this.firstIndex];
                 bottomItem.init(data);
-                let firstItem = this.itemList[0];
-                let y = firstItem.node.y + bottomItem.node.height;
-                bottomItem.node.y = y;
+                bottomItem.node.setPosition(this.getItemPos(this.firstIndex));
                 this.itemList.unshift(bottomItem);
             });
-            // if (Math.abs(offsetY) <= this.itemHight) {
-            //         return;
-            //     }
-            // let dir = 0;
-            // if (offsetY > 0) {
-            //     dir = Math.floor(offsetY / this.itemHight);
-            //     let changeCount = Math.abs(dir);
-            //     changeCount--
-            //     changeCount = Math.min(this.dataList.length - this.lastIndex - 1, changeCount);
-            //     let topItemList = this.itemList.splice(0, changeCount);
-            //     topItemList.forEach(topItem => {
-            //         let data = this.dataList[this.lastIndex + 1];
-            //         if (!data) {
-            //             return;
-            //         }
-            //         this.lastIndex++;
-            //         this.firstIndex++;
-            //         topItem.init(data);
-            //         let lastItem = this.itemList[this.itemList.length - 1];
-            //         let y = lastItem.node.y - lastItem.node.height;
-            //         topItem.node.y = y;
-            //         this.lastY += this.itemHight;
-            //         this.itemList.push(topItem);
-            //     });
-            //} else if (offsetY < 0) {
-            // dir = Math.ceil(offsetY / this.itemHight);
-            //     let changeCount = Math.abs(dir);
-            //     changeCount--
-            //     changeCount = Math.min(this.firstIndex, changeCount);
-            //     let bottomItemList = this.itemList.splice(this.itemList.length - changeCount - 1, changeCount);
-            //     bottomItemList.forEach(bottomItem => {
-            //         let data = this.dataList[this.firstIndex - 1];
-            //         if (!data) {
-            //             return;
-            //         }
-            //         this.firstIndex--;
-            //         this.lastIndex--;
-            //         bottomItem.init(data);
-            //         let firstItem = this.itemList[0];
-            //         let y = firstItem.node.y + bottomItem.node.height;
-            //         bottomItem.node.y = y;
-            //         this.itemList.unshift(bottomItem);
-            //         this.lastY -= this.itemHight;
-            //     });
-            // }
-            // console.error("容器位置", this.content.y, "上次位置:", this.lastY);
         }
     }
 
@@ -168,7 +132,14 @@ export class NewScrollView extends cc.Component {
         let item = itemNode.getComponent(ScrollItem);
         item.init(data);
         itemNode.setParent(this.content);
-        itemNode.setPosition(100, index * -100);
+        itemNode.setPosition(this.getItemPos(index));
         return item;
+    }
+
+    private getItemPos(index: number): cc.Vec2 {
+        let lineCount = this.fixedPosList.length;
+        let x = this.fixedPosList[index % lineCount];
+        let y = Math.floor(index / lineCount) * -this.itemHight;
+        return cc.v2(x, y);
     }
 }

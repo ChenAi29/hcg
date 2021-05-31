@@ -4,6 +4,7 @@ import { UIPath } from "../../enum/UIPath";
 import { BaseUI } from "../BaseUI";
 import { PetDetail } from "./PetDetail";
 import { PetItem } from "./PetItem";
+import { PetListContainer } from "./PetListContainer";
 
 /*
  * @Author: Xiong ZhiCheng 
@@ -15,8 +16,8 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export class PetListDialog extends BaseUI {
 
-    @property({ displayName: "宠物容器", type: cc.Node })
-    private petContainer: cc.Node = null;
+    @property({ displayName: "宠物容器", type: PetListContainer })
+    private petContainer: PetListContainer = null;
 
     @property({ displayName: "信息界面", type: PetDetail })
     private petDetail: PetDetail = null;
@@ -30,22 +31,7 @@ export class PetListDialog extends BaseUI {
         if (!dataList.length) {
             return;
         }
-        let offsetX = 30;
-        let offsetY = 30;
-        let petPre = appContext.resManager.getPrefab(PrefabPath.PET_ITEM);
-        for (let i = 0; i < dataList.length; i++) {
-            let petData = dataList[i];
-            if (!petData) {
-                continue;
-            }
-            let petItemNode = cc.instantiate(petPre);
-            petItemNode.setParent(this.petContainer);
-            let x = offsetX / 2 + (i % 3) * (offsetX + petItemNode.width);
-            let y = -(offsetY / 2 + Math.floor(i / 3) * (offsetY + petItemNode.height));
-            petItemNode.setPosition(x, y);
-            let petItem = petItemNode.getComponent(PetItem);
-            petItem.init(petData, this.refreshDetail.bind(this));
-        }
+        this.petContainer.init(dataList);
     }
 
     private clickCloseBtn(): void {

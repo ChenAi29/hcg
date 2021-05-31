@@ -5,7 +5,7 @@
  */
 export class NodePool {
 
-    public static nodeMap: Map<cc.Prefab, [cc.Node]> = new Map();
+    public static nodeMap: Map<cc.Prefab, cc.Node[]> = new Map();
 
     public static instanceToPre: Map<cc.Node, cc.Prefab> = new Map();
 
@@ -14,8 +14,10 @@ export class NodePool {
         if (nodeList && nodeList.length) {
             let targetNode = nodeList.pop();
             targetNode.active = true;
-            return;
+            return targetNode;
         }
+        nodeList = [];
+        this.nodeMap.set(prefab, nodeList);
 
         let node = cc.instantiate(prefab);
         this.instanceToPre.set(node, prefab);

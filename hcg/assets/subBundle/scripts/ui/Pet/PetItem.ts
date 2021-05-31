@@ -1,4 +1,5 @@
 import { PetData } from "../../data/PetData";
+import { ScrollItem } from "../../gameCommon/scrollView/ScrollItem";
 
 /*
  * @Author: Xiong ZhiCheng 
@@ -8,7 +9,7 @@ import { PetData } from "../../data/PetData";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export class PetItem extends cc.Component {
+export class PetItem extends ScrollItem {
 
     @property({ displayName: "姓名", type: cc.Label })
     private petNameLabel: cc.Label = null;

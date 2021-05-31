@@ -57,6 +57,6 @@ export class AppContext extends cc.Component {
     }
 
     private initCompleted(): void {
-        // appContext.uiManager.showBoard(UIPath.GAME_BOARD);
+        appContext.uiManager.showBoard(UIPath.GAME_BOARD);
     }
 }

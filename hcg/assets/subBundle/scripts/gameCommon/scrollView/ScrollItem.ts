@@ -11,7 +11,12 @@ export class ScrollItem extends cc.Component {
     @property({ displayName: "文字", type: cc.Label })
     private label: cc.Label = null;
 
-    public init(data: any): void {
-        this.label.string = data + "";
+    private data: any = null;
+
+    public getData(): any {
+        return this.data;
+    }
+
+    public init(...args): void {
     }
 }
